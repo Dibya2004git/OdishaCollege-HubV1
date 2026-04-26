@@ -1,35 +1,29 @@
-// 1. Database se data store karne ke liye array
+// 1. Database State
 let colleges = []; 
 
-// 2. Firebase se Colleges mangwane ka function
+// 2. Data Load Function
 async function loadCollegesFromFirebase() {
     try {
-        console.log("Database se data fetch ho raha hai...");
         const snapshot = await db.collection("colleges").orderBy("rank", "asc").get();
-        
-        colleges = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-        
-        console.log("✅ Database synced! Total colleges:", colleges.length);
-        renderHomeColleges(colleges); // Initial load
+        colleges = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderHomeColleges(colleges);
+        console.log("✅ Database Ready");
     } catch (error) {
-        console.error("❌ Firebase Error:", error);
+        console.error("❌ Error:", error);
     }
 }
 
-// 3. UI par Colleges dikhane ka function
-function renderHomeColleges(dataToRender) {
+// 3. UI Renderer (Card Design)
+function renderHomeColleges(data) {
     const container = document.getElementById('college-container');
     if (!container) return;
     
-    if (dataToRender.length === 0) {
-        container.innerHTML = `<div class="no-results">No colleges found in this category.</div>`;
+    if (data.length === 0) {
+        container.innerHTML = `<div class="no-results">Aapke search ke hisaab se koi college nahi mila.</div>`;
         return;
     }
 
-    container.innerHTML = dataToRender.map(college => `
+    container.innerHTML = data.map(college => `
         <div class="college-card">
             <img src="${college.image}" alt="${college.name}">
             <div class="card-content">
@@ -37,18 +31,34 @@ function renderHomeColleges(dataToRender) {
                 <h3>${college.name}</h3>
                 <p>📍 ${college.location} • ${college.type}</p>
                 <div class="fees">Fees: ${college.fees}</div>
-                <button class="view-btn">View Details</button>
+                <button class="view-btn" onclick="goToDetails('${college.id}')">View Details</button>
             </div>
         </div>
     `).join('');
 }
 
-// 4. Global Filter Function (Motive: Law, Arts, Science filters fix)
+// 4. SEARCH FEATURE (Naya)
+const searchInput = document.querySelector('.search-bar input');
+if(searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = colleges.filter(c => 
+            c.name.toLowerCase().includes(term) || 
+            c.location.toLowerCase().includes(term)
+        );
+        renderHomeColleges(filtered);
+    });
+}
+
+// 5. FILTER FEATURE
 window.filterByStream = (stream) => {
-    console.log("Filtering by:", stream);
     const filtered = stream === 'All' ? colleges : colleges.filter(c => c.stream === stream);
     renderHomeColleges(filtered);
 };
 
-// 5. Page load hote hi connect karein
+// 6. VIEW DETAILS REDIRECT
+window.goToDetails = (id) => {
+    window.location.href = `college-details.html?id=${id}`;
+};
+
 window.addEventListener('DOMContentLoaded', loadCollegesFromFirebase);
