@@ -85,14 +85,25 @@
 
 <script>
     // Paste your Firebase Config here (Jo index.html mein dala tha)
-    const firebaseConfig = {
-        apiKey: "YOUR_REAL_API_KEY", // <-- Apni API Key yahan dalein
-        authDomain: "odishacollege-hubv1.firebaseapp.com",
-        projectId: "odishacollege-hubv1",
-        storageBucket: "odishacollege-hubv1.appspot.com",
-        messagingSenderId: "36729584610",
-        appId: "1:36729584610:web:9f34567e7c8d9e0f"
-    };
+  // Import the functions you need from the SDKs you need
+
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyCyjgsryCej6KE7w5DLHdWLSATV5MLRzlY",
+  authDomain: "odishacollege-hubv1.firebaseapp.com",
+  projectId: "odishacollege-hubv1",
+  storageBucket: "odishacollege-hubv1.firebasestorage.app",
+  messagingSenderId: "356610410895",
+  appId: "1:356610410895:web:bd5b1eae79b1983ff5a3fa",
+  measurementId: "G-H5XBR6HTNT"
+};
+
+// Initialize Firebase
+
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
