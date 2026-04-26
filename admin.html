@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Import College Data</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; background: #eef2f3; }
+        .form-container { max-width: 600px; background: white; padding: 30px; border-radius: 15px; margin: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h2 { color: #333; text-align: center; margin-bottom: 25px; }
+        label { display: block; margin-top: 10px; font-weight: bold; color: #555; }
+        input, textarea, select { width: 100%; margin-top: 5px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+        textarea { height: 80px; resize: vertical; }
+        button { background: #f4622a; color: white; border: none; padding: 15px; cursor: pointer; width: 100%; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 20px; transition: 0.3s; }
+        button:hover { background: #d44f1e; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>🎓 College Import Panel</h2>
+    
+    <label>College Full Name</label>
+    <input type="text" id="name" placeholder="e.g. Biju Patnaik University of Technology">
+
+    <div class="grid">
+        <div>
+            <label>Short Name</label>
+            <input type="text" id="short" placeholder="e.g. BPUT">
+        </div>
+        <div>
+            <label>Location</label>
+            <input type="text" id="loc" placeholder="e.g. Rourkela">
+        </div>
+    </div>
+
+    <div class="grid">
+        <div>
+            <label>Stream (Category)</label>
+            <select id="stream">
+                <option value="">-- Select Stream --</option>
+                <option value="Engineering">Engineering</option>
+                <option value="Medical">Medical</option>
+                <option value="MBA">MBA/Management</option>
+                <option value="Law">Law</option>
+                <option value="Science">Science (B.Sc/M.Sc)</option>
+                <option value="Arts">Arts (B.A/M.A)</option>
+            </select>
+        </div>
+        <div>
+            <label>College Type</label>
+            <select id="type">
+                <option value="Government">Government</option>
+                <option value="Private">Private</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div>
+            <label>Annual Fees</label>
+            <input type="text" id="fees" placeholder="e.g. ₹1.2L - ₹2.5L">
+        </div>
+        <div>
+            <label>Odisha Rank</label>
+            <input type="number" id="rank" placeholder="e.g. 5">
+        </div>
+    </div>
+
+    <label>Image URL</label>
+    <input type="text" id="image" placeholder="Paste image link here">
+
+    <label>Description</label>
+    <textarea id="desc" placeholder="Write a short intro about the college..."></textarea>
+
+    <label>Tags (Comma separated)</label>
+    <input type="text" id="tags" placeholder="e.g. Top Placement, WiFi Campus, B.Tech, MCA">
+
+    <button onclick="saveToFirebase()">🚀 Import to Database</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+<script>
+    // Paste your Firebase Config here (Jo index.html mein dala tha)
+    const firebaseConfig = {
+        apiKey: "YOUR_REAL_API_KEY", // <-- Apni API Key yahan dalein
+        authDomain: "odishacollege-hubv1.firebaseapp.com",
+        projectId: "odishacollege-hubv1",
+        storageBucket: "odishacollege-hubv1.appspot.com",
+        messagingSenderId: "36729584610",
+        appId: "1:36729584610:web:9f34567e7c8d9e0f"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    async function saveToFirebase() {
+        const college = {
+            name: document.getElementById('name').value,
+            short: document.getElementById('short').value,
+            loc: document.getElementById('loc').value,
+            type: document.getElementById('type').value,
+            stream: document.getElementById('stream').value,
+            fees: document.getElementById('fees').value,
+            rank: Number(document.getElementById('rank').value),
+            image: document.getElementById('image').value,
+            desc: document.getElementById('desc').value,
+            rating: 4.5,
+            tags: document.getElementById('tags').value.split(',').map(tag => tag.trim()),
+            reviews: 0,
+            addedOn: new Date()
+        };
+
+        if(!college.name || !college.stream) {
+            alert("Please fill Name and Stream!");
+            return;
+        }
+
+        try {
+            await db.collection("colleges").add(college);
+            alert("✅ College Added to Firebase!");
+            location.reload(); 
+        } catch (error) {
+            alert("❌ Error: " + error.message);
+        }
+    }
+</script>
+
+</body>
+</html>
